@@ -1,4 +1,4 @@
-tasks = []
+tasks = [{'title': 'Задача 1', 'description': 'Описание задачи', 'create_at': '2020-12-01', 'update_at': None}]
 
 
 def show_all_tasks() -> str:
