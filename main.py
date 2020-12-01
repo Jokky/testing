@@ -10,6 +10,8 @@ def show_all_tasks() -> str:
     for task in tasks:
         result += 'Задача №' + task.id + '. Заголовок: ' + task.title + '. Описание: ' + task.description + '\n'
 
+    return result
+
 
 # Найти задачу и отобразить по шаблону
 def show_task(id: int) -> str:
