@@ -1,80 +1,9 @@
-import datetime
-tasks = [{'id': 1, 'title': 'Задача 1', 'description': 'Описание задачи', 'create_at': '2020-12-01', 'update_at': None}]
 
+from entity.Task import Task
+from repository.TaskRepositoryInMemory import TaskRepositoryInMemory
+from repository.TaskRepositoryMySQL import TaskRepositoryMySQL
 
-def show_all_tasks() -> str:
-    if len(tasks) == 0:
-        return 'Нет задач'
-
-    result = ''
-
-    for task in tasks:
-        result += 'Задача №' + str(task.get('id')) + '. Заголовок: ' + task.get('title') + '. Описание: ' + task.get(
-            'description') + '\n'
-
-    return result
-
-
-# Найти задачу и отобразить по шаблону
-def show_task(id: int) -> str:
-    for task in tasks:
-        if id == task.get('id'):
-            return 'Задача №' + str(task.get('id')) + '. Заголовок: ' + task.get('title') + '. Описание: ' + task.get(
-                'description') + '\n'
-    return 'Не найдена задача'
-
-
-# Найти задачу в списке и заменить на отредактированную
-def edit_task(task: dict) -> bool:
-    pos = -1
-    for i in range(len(tasks)):
-        t = tasks[i]
-        if t.get('id') == task.get('id'):
-            pos = i
-            break
-
-    if pos == -1:
-        return False
-
-    tasks[pos]['title'] = task.get('title')
-    tasks[pos]['description'] = task.get('description')
-
-    return True
-
-
-# Добавить задачу в конец списка
-def add_task(task: dict) -> bool:
-    max_id = 0
-    for i in tasks:
-        if i.get('id') > max_id:
-            max_id = i.get('id')
-    max_id += 1
-    now = datetime.datetime.now()
-    create_at = str(now.year) + '-' + str(now.month) + '-' + str(now.day)
-
-    task['id'] = max_id
-    task['create_at'] = str(create_at)
-    task['update_at'] = None
-    tasks.append(task)
-
-    return True
-
-
-# Удалить задачу в массиве по id задачи
-def remove_task(id: int) -> bool:
-    pos = -1
-    for i in range(len(tasks)):
-        task = tasks[i]
-
-        if task.get('id') == id:
-            pos = i
-            break
-
-    if pos > -1:
-        del tasks[pos]
-        return True
-
-    return False
+tasks_repository = TaskRepositoryMySQL()
 
 
 # Написать логику управления с консоли
@@ -102,29 +31,37 @@ def run():
             break
 
         if command_num == 1:
-            print(show_all_tasks())
+            tasks = tasks_repository.show_all()
+            result = ''
+            for task in tasks:
+                result += task.to_string() + '\n'
+            print(result)
         if command_num == 2:
             task_id = int(input('Номер задачи: '))
-            print(show_task(task_id))
+            result = tasks_repository.show(task_id)
+            if isinstance(result, Task):
+                print(result.to_string())
+            else:
+                print(result)
         if command_num == 3:
-            task = {}
-            task['title'] = input('Введите заголовок: ')
-            task['description'] = input('Введите заголовок: ')
+            task = Task()
+            task.title = input('Введите заголовок: ')
+            task.description = input('Введите описание: ')
 
-            result = add_task(task)
+            result = tasks_repository.add(task)
 
             if result:
                 print('Задача добавлена')
         if command_num == 4:
             remove_1 = int(input('номер задачи для удаления: '))
-            remove_task(remove_1)
+            tasks_repository.delete(remove_1)
         if command_num == 5:
-            task = {}
-            task['id'] = int(input('введите номер задачи для изменения: '))
-            task['title'] = input('заголовок задачи: ')
-            task['description'] = input('описание задачи: ')
+            task = Task()
+            task.id = int(input('введите номер задачи для изменения: '))
+            task.title = input('заголовок задачи: ')
+            task.description = input('описание задачи: ')
 
-            edit_task(task)
+            tasks_repository.update(task)
 
     return False
 
