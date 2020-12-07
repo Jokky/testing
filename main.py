@@ -1,9 +1,8 @@
 
 from entity.Task import Task
-from repository.TaskRepositoryInMemory import TaskRepositoryInMemory
-from repository.TaskRepositoryMySQL import TaskRepositoryMySQL
+from repository.TaskRepositoryInXML import TaskRepositoryXML
 
-tasks_repository = TaskRepositoryMySQL()
+tasks_repository = TaskRepositoryXML()
 
 
 # Написать логику управления с консоли
